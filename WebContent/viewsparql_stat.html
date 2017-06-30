@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SPARQL+MapChartのサンプル</title>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="../lib/sldAssist_fu.js"></script>
+<script type="text/javascript">
+var commands = {
+    sparql: {
+        endpoint: "http://sparql.statld.org/jsmini/query",
+     	// endpoint: "http://192.168.11.9:3030/maprdf/query",
+        textareaId: "sparql_query"
+    },
+    data_firstRow: ["緯度", "経度", "人口", "都道府県名"],
+    gMapChart: {
+        placeId: "map_div"
+    }
+};
+sldAssist.fu.main.execute(commands);
+</script>
+</head>
+<body>
+	<textarea id="sparql_query" style="display:none;">
+        PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+ 
+        SELECT ?lat ?lng ?population ?prefectureName
+        WHERE {										
+            	?prefecture a jsm-code:Prefecture ;
+            	jsm-code:a-region jsm-code:rgn-関東地方 ;
+            	rdfs:label ?prefectureName ;
+                jsm-code:a-lat ?lat ;
+                jsm-code:a-lng ?lng ;
+                jsm-code:a-population ?population .
+        }
+    </textarea>
+    <div id="map_div" style="width: 500px; height: 600px; ">map div</div>
+    
+</body>
+</html>

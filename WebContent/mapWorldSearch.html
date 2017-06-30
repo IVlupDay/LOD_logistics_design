@@ -1,0 +1,55 @@
+<!-- Sparql search on Google map for distribution agency design powered by konagayalab endpoint -->
+	 
+<!DOCTYPE html>
+<html>
+  <head>
+ 
+    <meta charset="utf-8">
+    <title>Distribution Center Agency Estimation with Sparql on Google Map</title>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/sparqlQuery/sparqlWorldQuery.js"> </script>
+    <script type="text/javascript" src="../lib/sparqlQuery/visualizeWorldMap.js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?callback=visualizeWorldMap"></script>
+    
+    <!-- Google map and street view interface setting  -->
+    <style>
+      	html, body { 
+      		height: 101%; margin: 0; 
+      	}
+      	
+      	#googlemap, #streetview { 
+      	float: left; height: 100%; width: 50%; 
+      	}
+    </style>
+   </head> 
+   
+   <body>
+    <div id="googlemap"></div>
+    <div id="streetview"></div> 
+    
+  <!-- Sparql query (RDF data) for distribution agency with Google street view　(PNH district) -->
+  <textarea id="sparql_worldmap" style="display:none;">
+  			
+  			PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+			PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+			PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+			PREFIX  dbpedia-owl:  <http://dbpedia.org/ontology/>
+			PREFIX dbpedia: <http://dbpedia.org/resource>
+			PREFIX dbpprop: <http://dbpedia.org/property>
+
+			SELECT DISTINCT ?country ?citylabel (STR(?pop) AS ?population) ?lat ?long
+					WHERE {
+   							?city rdf:type dbpedia-owl:City.
+   							?city rdfs:label ?citylabel.
+   							?city geo:lat ?lat .
+   							?city geo:long ?long . 
+   							?city dbpedia-owl:country ?country.
+   							?country rdfs:label ?countrylabel.
+   							?city dbpedia-owl:populationTotal ?pop .
+   					FILTER ( lang(?countrylabel) = 'en' and lang(?citylabel) = 'en' )
+			} 
+  </textarea>
+  
+  </body>
+</html>

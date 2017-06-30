@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+
+<!--  
+
+ <style>
+      	html, body { 
+      		height: 101%; margin: 0; 
+      		}
+      	#googlemap, #streetview { 
+      		float: left; height: 100%; width: 50%; 
+      	}
+      	<!--
+      	
+
+# PREFIX Complete
+		
+		PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+		 PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+		 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+		 PREFIX odp: <http://odp.jig.jp/odp/1.0#>
+		 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		 
+		 PREFIX pc-code-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/code/2010/> 
+		 PREFIX pc-measure-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/measure/2010/>
+		 PREFIX pc-dimension-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/dimension/2010/>
+		 PREFIX cd-dimension: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/> 
+		 PREFIX cd-dimension-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/2016/> 
+		 PREFIX cd-code-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/code/2016/>
+		 PREFIX ic:<http://imi.ipa.go.jp/ns/core/rdf#> 
+		 
+		 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>
+		 PREFIX dcterms: <http://purl.org/dc/terms/>
+		 PREFIX dbpo: <http://dbpedia.org/ontology/>
+		 
+		 PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
+		 PREFIX sac: <http://data.e-stat.go.jp/lod/sac/>
+		 PREFIX sace: <http://data.e-stat.go.jp/lod/sace/>
+		 PREFIX sacr: <http://data.e-stat.go.jp/lod/sacr/>
+		
+		 
+            
+            
+      
+
+
+
+   
+# Service Work 1
+SELECT ?searchCityName ?lat ?long WHERE {
+		  		   { SERVICE <http://sparql.odp.jig.jp/api/v1/sparql> {
+		 				SELECT DISTINCT ?searchCityName ?lat ?long  WHERE {
+		 		   			   	?city rdfs:label ?searchCityName ;
+   		    	   	 		   	rdfs:label ?searchCityName ; 
+	         		 		   	geo:lat ?lat ;
+                 	 		   	geo:long ?long .
+                 		FILTER(LANGMATCHES(LANG(?searchCityName), "ja"))
+            		 	FILTER(regex(str(?searchCityName), "市$")) 
+                  		}
+        	 	   }
+		 	  } 
+         }     
+
+  
+ # Service work 2       
+ { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+		  	 		     		SELECT DISTINCT ?year ?cityCode ?population ?nationality ?age 
+		  	 		     			WHERE {
+		  	 		     				?city cd-dimension:timePeriod ?year ;
+   		    	        				cd-dimension:standardAreaCode ?cityCode ;
+   		    	        				cd-dimension-2016:sex cd-code-2016:sex-total ;
+   		    	        				cd-dimension:standardAreaCode / ic:市区町村 "大阪市"@ja ;
+   		    	        				pc-measure-2010:population ?population ;
+           								pc-dimension-2010:area pc-code-2010:area-all ; 
+           								cd-dimension-2016:nationality ?nationality ;
+           								cd-dimension-2016:age ?age .
+           								}
+        				 		}
+        				 		    
+# Multiple endpoint 
+SELECT ?searchCityName ?year ?cityCode ?cityName ?area ?lat ?long 
+		 		?sex ?population ?sexMale ?sexFemale ?nationality ?age 
+		 			WHERE {
+		  		    	{ SERVICE <http://sparql.odp.jig.jp/api/v1/sparql> {
+		 					SELECT DISTINCT ?searchCityName ?lat ?long  
+		 						WHERE {
+		 		   				   		?city rdfs:label ?searchCityName ;
+   		    	   	 		   			rdfs:label ?searchCityName ; 
+	         		 		   			geo:lat ?lat ;
+                 	 		   			geo:long ?long .
+                 			FILTER(LANGMATCHES(LANG(?searchCityName), "ja"))
+            		 		FILTER(regex(str(?searchCityName), "市$")) 
+                  			}
+        	 	    	} { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+		  	 		     	SELECT DISTINCT ?year ?cityCode ?cityName ?area  ?population
+		  	 		     		?sexMale ?sexFemale ?nationality ?age 
+		  	 		     			WHERE {
+		 					   			?city ic:市区町村  ?cityName ;
+		 					   			ic:市区町村 "大阪市"@ja .
+		 					   			OPTIONAL { ?city cd-dimension:timePeriod ?year .}
+		 					   			OPTIONAL { ?city cd-dimension:standardAreaCode ?cityCode .}
+		 					   			OPTIONAL { ?city cd-code-2016:sex-male ?sexMale . }
+		 					   			OPTIONAL { ?city cd-code-2016:sex-female ?sexFemale . }
+		  	 		     	   			OPTIONAL { ?city  pc-measure-2010:population ?population . }
+		  	 		     	   			OPTIONAL { ?city  pc-dimension-2010:area ?area . }
+		  	 		     	   			OPTIONAL { ?city cd-dimension-2016:nationality ?nationality . }
+		  	 		     	   			OPTIONAL { ?city cd-dimension-2016:age ?age . }
+            		 		   			}
+        				   			}
+        						}
+		 	  		} FILTER(regex(str(?searchCityName), "大阪市$"))
+         		}      
+
+
+		 	
+# part search, OK
+SELECT ?searchCityName ?cityName ?lat ?long WHERE {
+		  		    { SERVICE <http://sparql.odp.jig.jp/api/v1/sparql> {
+		 					SELECT DISTINCT ?searchCityName ?lat ?long  
+		 						WHERE {
+		 		   				   		?city rdfs:label ?searchCityName ;
+   		    	   	 		   			rdfs:label ?searchCityName ; 
+	         		 		   			geo:lat ?lat ;
+                 	 		   			geo:long ?long .
+                 			FILTER(LANGMATCHES(LANG(?searchCityName), "ja"))
+            		 		FILTER(regex(str(?searchCityName), "市$")) 
+                  			}
+        	 	    } { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+		  	 		     	SELECT DISTINCT ?cityName WHERE {
+		 					   ?city ic:市区町村  ?cityName ;
+		 					   ic:市区町村 "大阪市"@ja ;
+            		 		   }
+        				   }
+        				}
+		 	  		} FILTER(regex(str(?searchCityName), "大阪市$"))
+         		}   
+        				 		  
+        
+ # Reference code 1
+ PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+		SELECT ?person ?interest ?known
+			WHERE
+		{
+  		SERVICE <http://people.example.org/sparql> { 
+    		?person foaf:name ?name .  
+    	OPTIONAL { 
+      		?person foaf:interest ?interest .
+      	SERVICE <http://people2.example.org/sparql> { 
+        	?person foaf:knows ?known . } }
+  			}    
+		}  
+		
+# Reference code 2
+PREFIX movie: <http://data.linkedmdb.org/resource/movie/>
+PREFIX dbpedia: <http://dbpedia.org/ontology/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?actor_name ?birth_date
+FROM <http://www.w3.org/People/Berners-Lee/card> # placeholder graph
+WHERE {
+  SERVICE <http://data.linkedmdb.org/sparql> {
+    <http://data.linkedmdb.org/resource/film/675> movie:actor ?actor .
+    ?actor movie:actor_name ?actor_name
+  }
+  SERVICE <http://dbpedia.org/sparql> {
+    ?actor2 a dbpedia:Actor ; foaf:name ?actor_name_en ; dbpedia:birthDate ?birth_date .
+    FILTER(STR(?actor_name_en) = ?actor_name)
+  }
+}
+		
+	    
+SELECT DISTINCT ?cityCode ?year ?searchCity ?population ?malePopulation 
+		 		?femalePopulation ?nationality ?age WHERE {
+   		    	     	?city ic:市区町村 ?searchCity ; 
+   		    	     	cd-dimension:standardAreaCode ?cityCode ;
+   		    	       	cd-dimension:timePeriod ?year ;
+   		    	       	cd-code-2016:sex-total ?population ;
+           				cd-code-2016:age-total ?age .
+          				OPTIONAL { cd-code-2016:sex-male ?malePopulation . }
+          				OPTIONAL { cd-code-2016:sex-female ?femalePopulation . }
+          				OPTIONAL { cd-dimension-2016:nationality ?nationality . }
+          				FILTER(LANGMATCHES(LANG(?searchCity), "ja"))
+           		 		FILTER(regex(str(?searchCity), "市$")) 
+         	  	 }    
+         	  	 
+# Search Population and age: Search city map 
+SELECT ?cityCode ?cityName (max(str(?pop)) as ?population)
+				 WHERE {
+			 		     ?city pc-measure-2010:population ?pop ;
+			 	    	 cd-dimension:standardAreaCode / ic:市区町村 ?cityName ;
+			 	    	 cd-dimension:standardAreaCode ?cityCode ;
+			 	    	 cd-dimension-2016:sex cd-code-2016:sex-total ; 
+         				 pc-dimension-2010:area pc-code-2010:area-all ; 
+         				 cd-dimension-2016:age cd-code-2016:age-total .
+         			     
+         			   { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+		  	 		     	 SELECT DISTINCT ?cityName 
+								WHERE {
+		 							   ?city ic:市区町村  ?cityName .
+		 							   FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+            		 				   FILTER(regex(str(?cityName), "市$")) 
+								}
+        			   }
+        	  }
+		 } GROUP BY ?cityName ?cityCode
+		 
+	
+<Test Temporary>
+SELECT ?cityCode ?cityName ?lat ?long ?sexMale ?sexFemale (max(str(?pop)) as ?population) 
+		 		   WHERE {
+		 		   		   SELECT DISTINCT ?searchCityName ?lat ?long  
+		 						WHERE {
+		 		   			   			?city rdfs:label ?searchCityName ;
+   		    	   	 		   			rdfs:label ?searchCityName ; 
+	         		 		   			geo:lat ?lat ;
+                 	 		   			geo:long ?long .
+         				    	FILTER(REGEX(STR(?searchCityName), STR(?cityName)))
+		  		   		 { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+                 	 			SELECT ?cityCode ?cityName ?pop ?sexMale ?sexFemale
+		 		  			    		WHERE {
+		 		   								?eCity pc-measure-2010:population ?pop ;
+			 	    							cd-dimension:standardAreaCode / ic:市区町村 ?cityName ;
+			 	    							cd-dimension:standardAreaCode ?cityCode ;
+			 	    							cd-dimension-2016:sex cd-code-2016:sex-total ; 
+         										pc-dimension-2010:area pc-code-2010:area-all ; 
+         										cd-dimension-2016:age cd-code-2016:age-total .
+         										OPTIONAL { ?eCity cd-code-2016:sex-male ?sexMale . }
+		 										OPTIONAL { ?eCity cd-code-2016:sex-female ?sexFemale . }	
+                 						FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+            		 					FILTER(regex(str(?cityName), "市$")) 
+            		 					}
+                  				   }
+        	 	   		      }
+		 	  	         } 
+         			}
+         			GROUP BY ?cityCode ?cityName ?lat ?long ?sexMale ?sexFemale
+		 			ORDER BY ?cityCode
+		 			
+		 			
+#Temporary Code 2
+SELECT ?cityCode ?cityName ?lat ?long ?sexMale ?sexFemale (max(str(?pop)) as ?population)  
+		 				 { SERVICE <http://sparql.odp.jig.jp/api/v1/sparql> {
+		 				 	     SELECT ?cityCode ?cityName ?lat ?long ?pop ?sexMale ?sexFemale 
+		 				 	     		WHERE {
+		 		   			   	 				?city rdfs:label ?searchCityName ;
+   		    	   	 		   	 				rdfs:label ?searchCityName ; 
+	         		 		   	 				geo:lat ?lat ;
+                 	 		    				geo:long ?long .	
+         				 		 		FILTER(REGEX(STR(?searchCityName), STR(?cityName)))
+		  		   		 { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+                 	 			SELECT ?cityCode ?cityName ?pop ?sexMale ?sexFemale
+		 		  			    		WHERE {
+		 		   								?city pc-measure-2010:population ?pop ;
+			 	    							cd-dimension:standardAreaCode / ic:市区町村 ?cityName ;
+			 	    							cd-dimension:standardAreaCode ?cityCode ;
+			 	    							cd-dimension-2016:sex cd-code-2016:sex-total ; 
+         										pc-dimension-2010:area pc-code-2010:area-all ; 
+         										cd-dimension-2016:age cd-code-2016:age-total .
+         										OPTIONAL { ?city cd-code-2016:sex-male ?sexMale . }
+		 										OPTIONAL { ?city cd-code-2016:sex-female ?sexFemale . }	
+                 						FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+            		 					FILTER(regex(str(?cityName), "大崎市")) 
+            		 							}
+            		 						}
+            		 					}
+                  				   }
+        	 	   		      }
+		 	  	         } 
+         				 GROUP BY ?cityCode ?cityName ?lat ?long ?sexMale ?sexFemale ?population
+		 				 ORDER BY ?cityCode	 
+		 				 
+#Temp Code 3
+SELECT DISTINCT ?searchCityName ?cityName ?lat ?long 
+		 				WHERE {
+		 		   			   	?city rdfs:label ?searchCityName ;
+   		    	   	 		   	rdfs:label ?searchCityName ; 
+	         		 		   	geo:lat ?lat ;
+                 	 		   	geo:long ?long .
+                 				FILTER(LANGMATCHES(LANG(?searchCityName), "ja"))
+                 				FILTER(REGEX(STR(?searchCityName), "大阪市"))  
+            		 	{ SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+                 	 	 		SELECT ?cityName 
+		 		  			  		   WHERE {
+		 		   							   ?city ic:市区町村 ?cityName ;
+			 	    						   cd-dimension:standardAreaCode / ic:市区町村 ?cityName ;
+                 							   FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+            		 						   FILTER(REGEX(STR(?cityName), "大阪市"))
+            		 	 	 		 		  }
+		 				     	 	   }
+		 				        }  
+        	 	   		}
+         				GROUP BY ?searchCityName ?cityName ?lat ?long
+         				ORDER BY ?searchCityName 	  
+         				 
+#Temp Code 4: multiple service on endpoint
+SELECT ?timePeriod ?searchCityName ?lat ?long ?cityCode ?cityName ?areaStatus ?numberPostOffice ?population
+		 	  ?numberFamily ?numberHouse ?sexMale ?sexFemale ?numberEmployee
+		 	  {
+		 	      { SERVICE <http://sparql.odp.jig.jp/api/v1/sparql> {
+		 				SELECT DISTINCT ?searchCityName ?lat ?long 
+		 				     	  WHERE {
+		 		   				    	  ?city rdfs:label ?searchCityName ;
+   		    	  	 	 	        	  rdfs:label ?searchCityName ;
+   		    	  	 	 	       	 	  geo:lat ?lat ;
+   		    	  	 		   			  geo:long ?long . 
+   		    	  	 		   			  FILTER(LANGMATCHES(LANG(?searchCityName), "ja"))
+   		    	  	 		   			  FILTER(REGEX(STR(?searchCityName), "市$"))
+                                   	    }
+            		 	     	  }
+            		  		}
+            	  { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+                 	 	SELECT DISTINCT ?timePeriod ?cityCode ?cityName ?areaStatus ?numberPostOffice 
+                 	 		?population ?numberFamily ?numberHouse ?sexMale ?sexFemale ?numberEmployee 
+		 		  			 	  WHERE {
+		 		   				 	 	  ?eCity cd-dimension:standardAreaCode / ic:市区町村 ?cityName ;
+		 		   				 		  cd-dimension:timePeriod ?timePeriod ;
+		 		   				 		  cd-dimension:standardAreaCode ?cityCode ;
+		 		   				 		  pc-dimension-2010:area ?areaStatus ;
+		 		   				 		  pc-measure-2010:population ?population ;
+		 		   				 		  cd-dimension-2016:sex cd-code-2016:sex-total .
+		 		   				 		  OPTIONAL { ?eCity ssds-measure-2016:H7501 ?numberPostOffice .}
+		 		   				 		  OPTIONAL { ?eCity pc-code-2010:householdType-total ?numberFamily .} 
+		 		   				 		  OPTIONAL { ?eCity pc-code-2010:kindOfResidenceAndTenureOfDwelling-total ?numberHouse .}
+		 		   				 		  OPTIONAL { ?eCity cd-code-2016:sex-male ?sexMale .} 
+                                     	  OPTIONAL { ?eCity cd-code-2016:sex-female ?sexFemale . }
+                                          OPTIONAL { ?eCity pc-code-2010:statusInEmployment-total ?numberEmployee .}
+                                     	  FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+                 					      FILTER(REGEX(STR(?cityName), "市$"))
+            		 				    }
+            		 		       }
+            		         } FILTER(contains(?searchCityName, ?cityName) && STRENDS(?searchCityName, ?cityName))
+			   } GROUP BY ?timePeriod ?searchCityName ?lat ?long ?cityCode ?cityName ?areaStatus ?numberPostOffice ?population
+		 	   ?numberFamily ?numberHouse ?sexMale ?sexFemale ?numberEmployee
+		 		
+#Temp 5
+SELECT ?searchCityName ?lat ?long 
+		 		WHERE {
+		 		      	 { SERVICE <http://sparql.odp.jig.jp/api/v1/sparql> {
+		 				   	  SELECT DISTINCT ?searchCityName ?lat ?long 
+		 						    WHERE {
+		 		   		   				    ?city rdfs:label ?searchCityName ;
+   		    	  	 		   				rdfs:label ?searchCityName ;
+   		    	  	 		   				geo:lat ?lat ;
+   		    	  	 		   				geo:long ?long . 
+   		    	  	 		   				FILTER(LANGMATCHES(LANG(?searchCityName), "ja"))
+   		    	  	 		   				FILTER(REGEX(STR(?searchCityName), "京都市"))
+            		 					  	}
+            		 				  }
+            		 			}
+            		     { SERVICE <http://data.e-stat.go.jp/lod/sparql/query> {
+                 	 		 SELECT DISTINCT ?cityName 
+		 		  			  	   WHERE {
+		 		   				 			?city pc-measure-2010:population ?pop ;
+		 		   				 			cd-dimension:standardAreaCode / ic:市区町村 ?cityName .
+                 							FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+                 							FILTER(REGEX(STR(?cityName), "京都市"))
+            		 						}
+            		 				  }
+            		 		    } FILTER(REGEX(STR(?searchCityName), STR(?cityName)))  
+			   } GROUP BY ?searchCityName ?lat ?long 
+			   
+#Temp Code 6: UNION
+# 新宿区の日本人の人口を求める
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX cd-dimension:<http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/> 
+PREFIX cd-code:<http://data.e-stat.go.jp/lod/ontology/crossDomain/code/> 
+PREFIX cd-attribute:<http://data.e-stat.go.jp/lod/ontology/crossDomain/attribute/> 
+PREFIX cd-dimension-2016:<http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/2016/> 
+PREFIX cd-code-2016:<http://data.e-stat.go.jp/lod/ontology/crossDomain/code/2016/> 
+PREFIX pc-measure-2010:<http://data.e-stat.go.jp/lod/ontology/populationCensus/measure/2010/> 
+PREFIX pc-dimension-2010:<http://data.e-stat.go.jp/lod/ontology/populationCensus/dimension/2010/> 
+PREFIX pc-code-2010:<http://data.e-stat.go.jp/lod/ontology/populationCensus/code/2010/> 
+PREFIX sac:<http://data.e-stat.go.jp/lod/sac/> 
+PREFIX ic:<http://imi.ipa.go.jp/ns/core/rdf#> 
+PREFIX ec-measure-2014: <http://data.e-stat.go.jp/lod/ontology/economicCensus/measure/2014/>  
+PREFIX ssds-measure-2016: <http://data.e-stat.go.jp/lod/ontology/systemOfSocialAndDemographicStatistics/measure/2016/>
+
+SELECT DISTINCT ?cityName (MAX(STR(?population)) AS ?totalPopulation)  STR(?jpPopulation) STR(?numberPostOffice) 
+  WHERE {
+          ?eCity cd-dimension:standardAreaCode / ic:市区町村 ?cityName .
+   {
+        {
+          ?eCity pc-measure-2010:population ?population ;
+         cd-dimension-2016:sex cd-code-2016:sex-total ; 
+         pc-dimension-2010:area pc-code-2010:area-all ; 
+         cd-dimension-2016:age cd-code-2016:age-total . 
+         }
+UNION {
+            ?eCity pc-measure-2010:population ?jpPopulation  ;
+            cd-dimension-2016:sex cd-code-2016:sex-total ; 
+            cd-dimension-2016:nationality cd-code-2016:nationality-japanese ; 
+            pc-dimension-2010:area pc-code-2010:area-all ; 
+            cd-dimension-2016:age cd-code-2016:age-total . 
+       } 
+UNION {
+           ?eCity ssds-measure-2016:H7501 ?numberPostOffice  . 
+           }
+     } .
+FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+FILTER(REGEX(STR(?cityName), "市$"))
+}  GROUP BY ?cityName ?population ?jpPopulation ?numberPostOffice
+	
+	
+#Temp Code: SubCityDat
+
+<textarea id="citySubData" style="display:none;">
+  		 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+		 PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+		 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+		 PREFIX odp: <http://odp.jig.jp/odp/1.0#>
+		 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		 
+		 PREFIX pc-code-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/code/2010/> 
+		 PREFIX pc-measure-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/measure/2010/>
+		 PREFIX pc-dimension-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/dimension/2010/>
+		 PREFIX cd-dimension: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/> 
+		 PREFIX cd-dimension-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/2016/> 
+		 PREFIX cd-code-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/code/2016/>
+		 PREFIX pe-measure-2016: <http://data.e-stat.go.jp/lod/ontology/populationEstimates/measure/2016/>
+		 PREFIX ic:<http://imi.ipa.go.jp/ns/core/rdf#> 
+		 
+		 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>
+		 PREFIX dcterms: <http://purl.org/dc/terms/>
+		 PREFIX dbpo: <http://dbpedia.org/ontology/>
+		 PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
+		 PREFIX sac: <http://data.e-stat.go.jp/lod/sac/>
+		 
+		 PREFIX ec-measure-2014: <http://data.e-stat.go.jp/lod/ontology/economicCensus/measure/2014/>  
+         PREFIX ssds-measure-2016: <http://data.e-stat.go.jp/lod/ontology/systemOfSocialAndDemographicStatistics/measure/2016/>
+		 
+		 SELECT ?cityName ?japanesePopulation ?numberFamily ?numberHouse ?sexMale ?sexFemale ?numberEmployee
+					WHERE {
+            				?eCity cd-dimension:standardAreaCode / ic:市区町村 ?cityName .
+            				OPTIONAL { ?eCity cd-code-2016:nationality-japanese ?japanesePopulation . }
+            				OPTIONAL { ?eCity pc-code-2010:householdType-total ?numberFamily .} 
+		 		   			OPTIONAL { ?eCity pc-code-2010:kindOfResidenceAndTenureOfDwelling-total ?numberHouse .}
+		 		   			OPTIONAL { ?eCity cd-code-2016:sex-male ?sexMale .} 
+                            OPTIONAL { ?eCity cd-code-2016:sex-female ?sexFemale . }
+                            OPTIONAL { ?eCity pc-code-2010:statusInEmployment-total ?numberEmployee .}
+                            FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+            				FILTER(REGEX(STR(?cityName), "市$"))
+					} 
+			GROUP BY ?cityName ?japanesePopulation ?numberFamily ?numberHouse ?sexMale ?sexFemale ?numberEmployee
+			ORDER BY ?cityName 
+  </textarea>
+-->
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!-- Sparql search on Google map for distribution agency design powered by konagayalab endpoint -->
+	 
+<!DOCTYPE html>
+<html>
+  <head>
+ 
+    <meta charset="utf-8">
+    <title>Distribution Center Agency Estimation with Sparql on Google Map</title>
+    
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/sparqlJPQuery.js"> </script>
+    <script type="text/javascript" src="../lib/visualizeJPLogisticsMap.js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?callback=visualizeJPLogisticsMap"></script>
+    
+    <!-- Google map and street view interface setting  -->
+    <style>
+      	html, body { 
+      		height: 101%; margin: 0; 
+      	}
+      	
+      	#googlemap, #streetview { 
+      	float: left; height: 100%; width: 50%; 
+      	}
+    </style>
+   </head> 
+   
+   <body>
+    <div id="googlemap"></div>
+    <div id="streetview"></div> 
+    
+  <!-- Sparql query (RDF data) for distribution agency with Google street view　(PNH district) -->
+  <textarea id="sparql" style="display:none;">
+  			
+		 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+		 PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+		 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+		 PREFIX odp: <http://odp.jig.jp/odp/1.0#>
+		 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		 PREFIX pc-code-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/code/2010/> 
+		 PREFIX pc-measure-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/measure/2010/>
+		 PREFIX pc-dimension-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/dimension/2010/>
+		 PREFIX cd-dimension: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/> 
+		 PREFIX cd-dimension-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/2016/> 
+		 PREFIX cd-code-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/code/2016/>
+		 
+		 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>
+		 PREFIX dcterms: <http://purl.org/dc/terms/>
+		 PREFIX dbpo: <http://dbpedia.org/ontology/>
+		 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+		 SELECT ?label ?lat ?long 
+     			WHERE    { ?s rdfs:label ?label ;
+               			   rdfs:label ?label ;
+	         			   geo:lat ?lat ;
+                	   	   geo:long ?long .
+            	FILTER(LANGMATCHES(LANG(?label), "ja"))
+            	FILTER(regex(str(?label), "市")) 
+         } 
+  </textarea>
+  
+  </body>
+</html>

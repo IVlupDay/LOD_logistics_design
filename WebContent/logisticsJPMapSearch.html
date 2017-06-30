@@ -1,0 +1,156 @@
+<!-- Sparql search on Google map for distribution agency design powered by konagayalab endpoint -->
+	 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Distribution Center Agency Estimation with Sparql on Google Map</title>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/sparqlQuery/sparqlJPQuery.js"> </script>
+    <script type="text/javascript" src="../lib/sparqlQuery/visualizeJPLogisticsMap.js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?callback=visualizeJPLogisticsMap"></script>
+    
+	<!-- Google map and street view interface setting  -->
+    <style>
+      	html, body { 
+      		height: 101%; margin: 0; 
+      	}
+      	
+      	#googlemap, #streetview { 
+      	float: left; height: 100%; width: 50%; 
+      	}
+    </style>
+   </head> 
+   <body>
+   
+    <div id="googlemap"></div>
+    <div id="streetview"></div> 
+    
+  <!-- Sparql query (RDF data) for distribution agency with Google street view　(PNH district) -->
+  <textarea id="cityMap" style="display:none;">
+  		 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+		 PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+		 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+		 PREFIX odp: <http://odp.jig.jp/odp/1.0#>
+		 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		 
+		 PREFIX pc-code-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/code/2010/> 
+		 PREFIX pc-measure-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/measure/2010/>
+		 PREFIX pc-dimension-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/dimension/2010/>
+		 PREFIX cd-dimension: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/> 
+		 PREFIX cd-dimension-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/2016/> 
+		 PREFIX cd-code-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/code/2016/>
+		 PREFIX pe-measure-2016: <http://data.e-stat.go.jp/lod/ontology/populationEstimates/measure/2016/>
+		 PREFIX ic:<http://imi.ipa.go.jp/ns/core/rdf#> 
+		 
+		 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>
+		 PREFIX dcterms: <http://purl.org/dc/terms/>
+		 PREFIX dbpo: <http://dbpedia.org/ontology/>
+		 PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
+		 PREFIX sac: <http://data.e-stat.go.jp/lod/sac/>
+		 
+		 PREFIX ec-measure-2014: <http://data.e-stat.go.jp/lod/ontology/economicCensus/measure/2014/>  
+         PREFIX ssds-measure-2016: <http://data.e-stat.go.jp/lod/ontology/systemOfSocialAndDemographicStatistics/measure/2016/>
+		 PREFIX lfs-measure-2016: <http://data.e-stat.go.jp/lod/ontology/laborForceSurvey/measure/2016/>
+         
+		 SELECT DISTINCT ?searchCityName ?lat ?long 
+		 	       { SERVICE <http://sparql.odp.jig.jp/api/v1/sparql> {
+		 				SELECT DISTINCT ?searchCityName ?lat ?long 
+		 				     	  WHERE {
+		 		   				    	  ?city rdfs:label ?searchCityName ;
+   		    	  	 	 	        	  rdfs:label ?searchCityName ;
+   		    	  	 	 	       	 	  geo:lat ?lat ;
+   		    	  	 		   			  geo:long ?long . 
+   		    	  	 		   			  FILTER(LANGMATCHES(LANG(?searchCityName), "ja"))
+   		    	  	 		   			  FILTER(REGEX(STR(?searchCityName), "市$"))
+            		 	     	  		}
+            		  			  }
+			   	  			} 
+			   	  GROUP BY ?searchCityName ?lat ?long 
+			   	  ORDER BY ?searchCityName 
+  </textarea>
+  
+  <textarea id="cityData" style="display:none;">
+  		 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+		 PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+		 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+		 PREFIX odp: <http://odp.jig.jp/odp/1.0#>
+		 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		 
+		 PREFIX pc-code-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/code/2010/> 
+		 PREFIX pc-measure-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/measure/2010/>
+		 PREFIX pc-dimension-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/dimension/2010/>
+		 PREFIX cd-dimension: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/> 
+		 PREFIX cd-dimension-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/2016/> 
+		 PREFIX cd-code-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/code/2016/>
+		 PREFIX pe-measure-2016: <http://data.e-stat.go.jp/lod/ontology/populationEstimates/measure/2016/>
+		 PREFIX ic:<http://imi.ipa.go.jp/ns/core/rdf#> 
+		 
+		 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>
+		 PREFIX dcterms: <http://purl.org/dc/terms/>
+		 PREFIX dbpo: <http://dbpedia.org/ontology/>
+		 PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
+		 PREFIX sac: <http://data.e-stat.go.jp/lod/sac/>
+		 
+		 PREFIX ec-measure-2014: <http://data.e-stat.go.jp/lod/ontology/economicCensus/measure/2014/>  
+         PREFIX ssds-measure-2016: <http://data.e-stat.go.jp/lod/ontology/systemOfSocialAndDemographicStatistics/measure/2016/>
+		 PREFIX lfs-measure-2016: <http://data.e-stat.go.jp/lod/ontology/laborForceSurvey/measure/2016/>
+         
+		 SELECT ?timePeriod (STR(?cityCode) AS ?strCityCode) ?cityName ?areaStatus 
+		 		(MAX(STR(?population)) AS ?totalPopulation) 
+		 			WHERE {
+            				?eCity cd-dimension:standardAreaCode / ic:市区町村 ?cityName ;
+            				pc-measure-2010:population ?population ;
+           		 			cd-dimension:timePeriod ?timePeriod ;
+	    					cd-dimension:standardAreaCode ?cityCode ;
+	   			 			pc-dimension-2010:area ?areaStatus ;
+            				cd-dimension-2016:nationality cd-code-2016:nationality-total ; 
+            				cd-dimension-2016:sex cd-code-2016:sex-total ; 
+            				pc-dimension-2010:area pc-code-2010:area-all ; 
+            				cd-dimension-2016:age cd-code-2016:age-total .
+           	 				FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+            				FILTER(REGEX(STR(?cityName), "市$"))
+					} 
+			  GROUP BY ?timePeriod ?cityCode ?cityName ?areaStatus ?population
+			  ORDER BY ?cityName
+  </textarea>
+ 
+  <textarea id="cityPostOffice" style="display:none;">
+  	 	 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+		 PREFIX jsm-code: <http://www.statld.org/lod/jsmini/code#>
+		 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+		 PREFIX odp: <http://odp.jig.jp/odp/1.0#>
+		 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		 
+		 PREFIX pc-code-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/code/2010/> 
+		 PREFIX pc-measure-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/measure/2010/>
+		 PREFIX pc-dimension-2010: <http://data.e-stat.go.jp/lod/ontology/populationCensus/dimension/2010/>
+		 PREFIX cd-dimension: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/> 
+		 PREFIX cd-dimension-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/dimension/2016/> 
+		 PREFIX cd-code-2016: <http://data.e-stat.go.jp/lod/ontology/crossDomain/code/2016/>
+		 PREFIX pe-measure-2016: <http://data.e-stat.go.jp/lod/ontology/populationEstimates/measure/2016/>
+		 PREFIX ic:<http://imi.ipa.go.jp/ns/core/rdf#> 
+		 
+		 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>
+		 PREFIX dcterms: <http://purl.org/dc/terms/>
+		 PREFIX dbpo: <http://dbpedia.org/ontology/>
+		 PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
+		 PREFIX sac: <http://data.e-stat.go.jp/lod/sac/>
+		 
+		 PREFIX ec-measure-2014: <http://data.e-stat.go.jp/lod/ontology/economicCensus/measure/2014/>  
+         PREFIX ssds-measure-2016: <http://data.e-stat.go.jp/lod/ontology/systemOfSocialAndDemographicStatistics/measure/2016/>
+         PREFIX lfs-measure-2016: <http://data.e-stat.go.jp/lod/ontology/laborForceSurvey/measure/2016/>
+         
+         SELECT ?cityName ?numberPostOffice
+		 			WHERE {
+            				?eCity cd-dimension:standardAreaCode / ic:市区町村 ?cityName ;
+            				ssds-measure-2016:H7501 ?numberPostOffice . 
+           	 				FILTER(LANGMATCHES(LANG(?cityName), "ja"))
+            				FILTER(REGEX(STR(?cityName), "市$"))
+					} 
+			  GROUP BY ?cityName ?numberPostOffice
+			  ORDER BY ?cityName
+  </textarea>
+  </body>
+</html>

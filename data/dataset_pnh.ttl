@@ -1,0 +1,51 @@
+@prefix district: <http://192.168.11.9/konagayalab/district#> .
+@prefix number: <http://192.168.11.9/konagayalab/population#> .
+ 
+district:PNH0001 a district:district_population ;
+   district:name "Chamkar Mon"  ;
+   district:population number:184200 ;
+   district:internetuser number:9080 .
+district:PNH0002 a district:district_population ;
+   district:name "Daun Penh"  ;
+   district:population number:119500 ;
+   district:internetuser number:5891 .
+district:PNH0003 a district:district_population ;
+   district:name "Prampir Makara"  ;
+   district:population number:93300 ;
+   district:internetuser number:4599 .
+district:PNH0004 a district:district_population ;
+   district:name "Tuol Kouk"  ;
+   district:population number:186100 ;
+   district:internetuser number:9174 .
+district:PNH0005 a district:district_population ;
+   district:name "Dangkor"  ;
+   district:population number:96100 ;
+   district:internetuser number:4737 .
+district:PNH0006 a district:district_population ;
+   district:name "Por Senchey"  ;
+   district:population number:234900 ;
+   district:internetuser number:11579 .
+district:PNH0007 a district:district_population ;
+   district:name "Mean Chey"  ;
+   district:population number:282700 ;
+   district:internetuser number:13936 .
+district:PNH0008 a district:district_population ;
+   district:name "Chbar Ampov"  ;
+   district:population number:160500 ;
+   district:internetuser number:7912 .
+district:PNH0009 a district:district_population ;
+   district:name "Russey Keo"  ;
+   district:population number:152600 ;
+   district:internetuser number:7522 .
+district:PNH0010 a district:district_population ;
+   district:name "Chruoy Changwar"  ;
+   district:population number:84000 ;
+   district:internetuser number:4141 .
+district:PNH0011 a district:district_population ;
+   district:name "Saen Sok"  ;
+   district:population number:198600 ;
+   district:internetuser number:9790 .
+district:PNH0012 a district:district_population ;
+   district:name "Preak Pnov"  ;
+   district:population number:59700 ;
+   district:internetuser number:2943 .

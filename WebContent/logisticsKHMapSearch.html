@@ -1,0 +1,48 @@
+<!-- Sparql search on Google map for distribution agency design powered by konagayalab endpoint -->
+	 
+<!DOCTYPE html>
+<html>
+  <head>
+ 
+    <meta charset="utf-8">
+    <title>Distribution Center Agency Estimation with Sparql on Google Map</title>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/sparqlQuery/sparqlKHQuery.js"> </script>
+    <script type="text/javascript" src="../lib/sparqlQuery/visualizeKHLogisticsMap.js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?callback=visualizeKHLogisticsMap"></script>
+    
+    <!-- Google map and street view interface setting  -->
+    <style>
+      	html, body { 
+      		height: 101%; margin: 0; 
+      	}
+      	
+      	#googlemap, #streetview { 
+      	float: left; height: 100%; width: 50%; 
+      	}
+    </style>
+   </head> 
+   
+   <body>
+    <div id="googlemap"></div>
+    <div id="streetview"></div> 
+    
+  <!-- Sparql query (RDF data) for distribution agency with Google street view　(PNH district) -->
+  <textarea id="sparql" style="display:none;">
+  
+  			PREFIX pnh:<http://192.168.11.9/konagayalab/phnompenh#> 			
+      		PREFIX dist:<http://192.168.11.9/konagayalab/phnompenh/district#> 	
+      		SELECT ?city ?name ?internet ?longtitude ?latitude ?number 	
+      			WHERE 
+      					{ ?code pnh:city ?city ; 	
+      			  		  dist:name ?name ;	
+      			  		  dist:internet ?internet ; 		
+      			  	      dist:latitude ?latitude ; 		
+      					  dist:longtitude ?longtitude ;  
+      			  		  dist:number ?number . 		
+      		}
+  </textarea>
+  
+  </body>
+</html>
